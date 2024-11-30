@@ -25,4 +25,4 @@ TMDB_ACCESS_TOKEN = "TMDB_ACCESS_TOKEN"
 
 [observability]
 enabled = true
-head_sampling_rate = 100
+head_sampling_rate = 1
