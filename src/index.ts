@@ -91,7 +91,7 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
         )?.rating,
         rating: {
           count: details.vote_count,
-          value: details.vote_average.toString(),
+          value: details.vote_average.toFixed(3),
         },
         alternativeTitles: details.alternative_titles.results.map((r) => ({
           title: r.title,
@@ -198,7 +198,7 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
     )?.rating,
     rating: {
       count: details.vote_count,
-      value: details.vote_average.toString(),
+      value: details.vote_average.toFixed(3),
     },
     alternativeTitles: details.alternative_titles.results.map((r) => ({
       title: r.title,
