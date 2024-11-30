@@ -15,22 +15,28 @@ import {
 
 const app = new Hono({ strict: false });
 
-app.get("/v1/tmdb/search/en", async (c) => {
+app.get("/v1/tmdb/search/:lang", async (c) => {
   const { TMDB_ACCESS_TOKEN } = env<{ TMDB_ACCESS_TOKEN: string }>(c);
   const term = c.req.query("term");
+  const lang = c.req.param("lang");
   if (!term) {
     return c.json([]);
   }
-  const searchRes: TmdbSearchResponse = await fetch(
-    `https://api.themoviedb.org/3/search/tv?language=en-US&query=${term}&page=1&include_adult=false`,
+  const searchRes = await $fetch<TmdbSearchResponse>(
+    `https://api.themoviedb.org/3/search/tv`,
     {
       headers: {
-        Accept: "application/json",
         Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
       },
+      query: {
+        language: lang,
+        query: term,
+        page: 1,
+        include_adult: false,
+      },
     }
-  ).then((res) => res.json());
-  console.log({ term, searchResCount: searchRes.results.length });
+  );
+  console.log({ term, lang, searchResCount: searchRes.results.length });
   const results = await Promise.all(
     searchRes.results.map(async (tv) => {
       const details = await $fetch<TmdbDetailsResponse>(
@@ -47,18 +53,15 @@ app.get("/v1/tmdb/search/en", async (c) => {
               "images",
               "credits",
             ].join(","),
+            language: lang,
           },
         }
       );
       let skyhookShow: SkyhookShowsResponse | undefined;
       if (details.external_ids.tvdb_id) {
-        skyhookShow = (await fetch(
+        skyhookShow = await $fetch<SkyhookShowsResponse>(
           `https://skyhook.sonarr.tv/v1/tvdb/shows/en/${details.external_ids.tvdb_id}`
-        )
-          .then((res) => res.json())
-          .catch((e) => {
-            console.error({ tvdbId: details.external_ids.tvdb_id, error: e });
-          })) as SkyhookShowsResponse;
+        );
       }
       return {
         tvdbId: tv.id,
@@ -105,10 +108,8 @@ app.get("/v1/tmdb/search/en", async (c) => {
             image: `https://image.tmdb.org/t/p/w500${c.profile_path}`,
           })),
         images: [
-          {
-            coverType: "Banner",
-            url: `https://image.tmdb.org/t/p/w500${details.backdrop_path}`,
-          },
+          ...(skyhookShow?.images.filter((i) => i.coverType === "Banner") ||
+            []),
           {
             coverType: "Poster",
             url: `https://image.tmdb.org/t/p/w500${details.poster_path}`,
@@ -138,10 +139,11 @@ app.get("/v1/tmdb/search/en", async (c) => {
   );
   return c.json(results);
 });
-app.get("/v1/tmdb/shows/en/:id", async (c) => {
+app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
   const { TMDB_ACCESS_TOKEN } = env<{ TMDB_ACCESS_TOKEN: string }>(c);
   const id = Number(c.req.param("id"));
-  console.log({ id: id });
+  const lang = c.req.param("lang");
+  console.log({ id, lang });
   const details = await $fetch<TmdbDetailsResponse>(
     `https://api.themoviedb.org/3/tv/${id}`,
     {
@@ -156,22 +158,19 @@ app.get("/v1/tmdb/shows/en/:id", async (c) => {
           "images",
           "credits",
         ].join(","),
+        language: lang,
       },
     }
   );
   let skyhookShow: SkyhookShowsResponse | undefined;
   if (details.external_ids.tvdb_id) {
-    skyhookShow = (await fetch(
+    skyhookShow = await $fetch<SkyhookShowsResponse>(
       `https://skyhook.sonarr.tv/v1/tvdb/shows/en/${details.external_ids.tvdb_id}`
-    )
-      .then((res) => res.json())
-      .catch((e) => {
-        console.error({ tvdbId: details.external_ids.tvdb_id, error: e });
-      })) as SkyhookShowsResponse;
+    );
   }
   const seasons = await Promise.all(
-    details.seasons.map(async (s) => {
-      const season: TmdbSeasonResponse = await fetch(
+    details.seasons.map((s) =>
+      $fetch<TmdbSeasonResponse>(
         `https://api.themoviedb.org/3/tv/${details.id}/season/${s.season_number}`,
         {
           headers: {
@@ -179,9 +178,8 @@ app.get("/v1/tmdb/shows/en/:id", async (c) => {
             Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
           },
         }
-      ).then((res) => res.json());
-      return season;
-    })
+      )
+    )
   );
   const result = {
     tvdbId: id,
@@ -228,10 +226,7 @@ app.get("/v1/tmdb/shows/en/:id", async (c) => {
         image: `https://image.tmdb.org/t/p/w500${c.profile_path}`,
       })),
     images: [
-      {
-        coverType: "Banner",
-        url: `https://image.tmdb.org/t/p/w500${details.backdrop_path}`,
-      },
+      ...(skyhookShow?.images.filter((i) => i.coverType === "Banner") || []),
       {
         coverType: "Poster",
         url: `https://image.tmdb.org/t/p/w500${details.poster_path}`,
