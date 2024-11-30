@@ -74,9 +74,9 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
             ?.toLowerCase(),
         originalLanguage:
           details.original_language &&
-          langs.where("2", details.original_language)?.[3],
+          langs.where("1", details.original_language)?.[3],
         language:
-          details.languages[0] && langs.where("2", details.languages[0])?.[3],
+          details.languages[0] && langs.where("1", details.languages[0])?.[3],
         firstAired: details.first_air_date,
         lastAired: details.last_air_date,
         tmdbId: details.id,
@@ -181,9 +181,9 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
         ?.toLowerCase(),
     originalLanguage:
       details.original_language &&
-      langs.where("2", details.original_language)?.[3],
+      langs.where("1", details.original_language)?.[3],
     language:
-      details.languages[0] && langs.where("2", details.languages[0])?.[3],
+      details.languages[0] && langs.where("1", details.languages[0])?.[3],
     firstAired: details.first_air_date,
     lastAired: details.last_air_date,
     tmdbId: details.id,
