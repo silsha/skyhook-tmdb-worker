@@ -1,0 +1,16 @@
+{
+  "name": "skyhook",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "hono": "^4.6.12"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241112.0",
+    "@types/bluebird": "^3.5.42",
+    "wrangler": "^3.88.0"
+  }
+}
