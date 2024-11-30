@@ -9,7 +9,6 @@ import {
   SkyhookSearchItem,
   SkyhookShowsResponse,
   TmdbDetailsResponse,
-  TmdbExternalIds,
   TmdbSearchResponse,
   TmdbSeasonResponse,
 } from "../types";
