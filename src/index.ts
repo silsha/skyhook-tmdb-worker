@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cache } from "hono/cache";
 import { $fetch } from "ofetch";
 import { env } from "hono/adapter";
 import * as Promise from "bluebird";
@@ -14,7 +15,13 @@ import {
 } from "../types";
 
 const app = new Hono({ strict: false });
-
+app.get(
+  "*",
+  cache({
+    cacheName: (c) => c.req.url,
+    cacheControl: "max-age=3600",
+  })
+);
 app.get("/v1/tmdb/search/:lang", async (c) => {
   const { TMDB_ACCESS_TOKEN } = env<{ TMDB_ACCESS_TOKEN: string }>(c);
   const term = c.req.query("term");
