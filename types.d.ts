@@ -103,6 +103,57 @@ export type TmdbDetailsResponse = {
   type: string;
   vote_average: number;
   vote_count: number;
+  alternative_titles: {
+    results: Array<{
+      iso_3166_1: string;
+      title: string;
+      type: string;
+    }>;
+  };
+  external_ids: TmdbExternalIds;
+  content_ratings: {
+    results: Array<{
+      iso_3166_1: string;
+      rating: string;
+    }>;
+  };
+  images: {
+    backdrops: Array<{
+      aspect_ratio: number;
+      height: number;
+      iso_639_1: string;
+      file_path: string;
+      vote_average: number;
+      vote_count: number;
+      width: number;
+    }>;
+    logos: Array<{
+      aspect_ratio: number;
+      height: number;
+      iso_639_1: string;
+      file_path: string;
+      vote_average: number;
+      vote_count: number;
+      width: number;
+    }>;
+    posters: Array<{
+      aspect_ratio: number;
+      height: number;
+      iso_639_1: string;
+      file_path: string;
+      vote_average: number;
+      vote_count: number;
+      width: number;
+    }>;
+  }; 
+  credits: {
+    cast: Array<{
+      known_for_department: string;
+      name: string;
+      character: string;
+      profile_path: string;
+    }>;
+  };
 };
 export type TmdbSeasonResponse = {
   _id: string;
