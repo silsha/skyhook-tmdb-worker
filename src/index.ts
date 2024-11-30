@@ -7,7 +7,6 @@ import countries from "i18n-iso-countries";
 import langs from "langs";
 import {
   SkyhookSearchItem,
-  SkyhookShowsResponse,
   TmdbDetailsResponse,
   TmdbSearchResponse,
   TmdbSeasonResponse,
@@ -63,12 +62,6 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
           },
         }
       );
-      let skyhookShow: SkyhookShowsResponse | undefined;
-      if (details.external_ids.tvdb_id) {
-        skyhookShow = await $fetch<SkyhookShowsResponse>(
-          `https://skyhook.sonarr.tv/v1/tvdb/shows/en/${details.external_ids.tvdb_id}`
-        );
-      }
       return {
         tvdbId: tv.id,
         title: details.name,
@@ -86,13 +79,10 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
           details.languages[0] && langs.where("2", details.languages[0])?.[3],
         firstAired: details.first_air_date,
         lastAired: details.last_air_date,
-        tvRageId: skyhookShow?.tvRageId,
-        tvMazeId: skyhookShow?.tvMazeId,
         tmdbId: details.id,
         imdbId: details.external_ids.imdb_id,
         status: details.status,
         runtime: details.last_episode_to_air.runtime,
-        timeOfDay: skyhookShow?.timeOfDay,
         originalNetwork: details.networks?.[0]?.name,
         network: details.networks?.[0]?.name,
         genres: details.genres.map((g) => g.name),
@@ -114,8 +104,6 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
             image: `https://image.tmdb.org/t/p/w500${c.profile_path}`,
           })),
         images: [
-          ...(skyhookShow?.images.filter((i) => i.coverType === "Banner") ||
-            []),
           {
             coverType: "Poster",
             url: `https://image.tmdb.org/t/p/w500${details.poster_path}`,
@@ -168,12 +156,6 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
       },
     }
   );
-  let skyhookShow: SkyhookShowsResponse | undefined;
-  if (details.external_ids.tvdb_id) {
-    skyhookShow = await $fetch<SkyhookShowsResponse>(
-      `https://skyhook.sonarr.tv/v1/tvdb/shows/en/${details.external_ids.tvdb_id}`
-    );
-  }
   const seasons = await Promise.all(
     details.seasons.map((s) =>
       $fetch<TmdbSeasonResponse>(
@@ -204,13 +186,10 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
       details.languages[0] && langs.where("2", details.languages[0])?.[3],
     firstAired: details.first_air_date,
     lastAired: details.last_air_date,
-    tvRageId: skyhookShow?.tvRageId,
-    tvMazeId: skyhookShow?.tvMazeId,
     tmdbId: details.id,
     imdbId: details.external_ids.imdb_id,
     status: details.status,
     runtime: details.last_episode_to_air.runtime,
-    timeOfDay: skyhookShow?.timeOfDay,
     originalNetwork: details.networks?.[0]?.name,
     network: details.networks?.[0]?.name,
     genres: details.genres.map((g) => g.name),
@@ -232,7 +211,6 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
         image: `https://image.tmdb.org/t/p/w500${c.profile_path}`,
       })),
     images: [
-      ...(skyhookShow?.images.filter((i) => i.coverType === "Banner") || []),
       {
         coverType: "Poster",
         url: `https://image.tmdb.org/t/p/w500${details.poster_path}`,
