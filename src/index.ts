@@ -165,6 +165,9 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
             Accept: "application/json",
             Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
           },
+          query: {
+            language: lang,
+          },
         }
       )
     )
