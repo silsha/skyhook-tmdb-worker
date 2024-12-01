@@ -63,8 +63,8 @@ npm run deploy
 
 ## API Endpoints
 
-- `GET /v1/tmdb/search/en?term={searchTerm}` - Search for TV shows
-- `GET /v1/tmdb/shows/en/{id}` - Get detailed information about a specific show
+- `GET /v1/tmdb/search/{language}?term={searchTerm}` - Search for TV shows
+- `GET /v1/tmdb/shows/{language}/{id}` - Get detailed information about a specific show
 
 ## Environment Variables
 
