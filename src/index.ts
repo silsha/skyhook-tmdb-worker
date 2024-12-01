@@ -82,7 +82,7 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
         tmdbId: details.id,
         imdbId: details.external_ids.imdb_id,
         status: details.status,
-        runtime: details.last_episode_to_air.runtime,
+        runtime: details.last_episode_to_air?.runtime,
         originalNetwork: details.networks?.[0]?.name,
         network: details.networks?.[0]?.name,
         genres: details.genres.map((g) => g.name),
