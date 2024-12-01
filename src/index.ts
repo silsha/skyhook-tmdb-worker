@@ -66,7 +66,7 @@ app.get("/v1/tmdb/search/:lang", async (c) => {
         tvdbId: tv.id,
         title: details.name,
         overview: details.overview,
-        slug: details.name.replace(/[^a-zA-Z0-9]/g, "-"),
+        slug: String(tv.id),
         originalCountry:
           details.origin_country[0] &&
           countries
@@ -173,7 +173,7 @@ app.get("/v1/tmdb/shows/:lang/:id", async (c) => {
     tvdbId: id,
     title: details.name,
     overview: details.overview,
-    slug: details.name.replace(/[^a-zA-Z0-9]/g, "-"),
+    slug: String(id),
     originalCountry:
       details.origin_country[0] &&
       countries
