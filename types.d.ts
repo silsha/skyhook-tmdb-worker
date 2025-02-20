@@ -233,6 +233,8 @@ export type SkyhookSearchItem = {
   tvMazeId: number;
   tmdbId: number;
   imdbId: string;
+  malIds: Array<number>;
+  aniListIds: Array<number>;
   lastUpdated: string;
   status: string;
   runtime: number;
@@ -283,6 +285,8 @@ export type SkyhookShowsResponse = {
   tvMazeId: number;
   tmdbId: number;
   imdbId: string;
+  malIds: Array<number>;
+  aniListIds: Array<number>;
   lastUpdated: string;
   status: string;
   runtime: number;
